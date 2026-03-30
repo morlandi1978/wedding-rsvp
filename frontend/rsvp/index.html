@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Conferma Partecipazione</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ivory: #faf6f0;
+      --cream: #f2ebe0;
+      --gold: #b8966a;
+      --gold-light: #d4b896;
+      --gold-dark: #8a6c42;
+      --sage: #8a9e8a;
+      --dusty-rose: #c4907a;
+      --charcoal: #2c2c2c;
+      --mid-gray: #6b6560;
+      --border: rgba(184,150,106,0.25);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Jost', sans-serif;
+      background-color: var(--ivory);
+      color: var(--charcoal);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Floral decorations ── */
+    .floral-bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .floral-bg svg {
+      position: absolute;
+      opacity: 0.07;
+    }
+    .floral-bg .fl-tl { top: -40px; left: -40px; width: 340px; transform: rotate(-15deg); }
+    .floral-bg .fl-br { bottom: -40px; right: -40px; width: 320px; transform: rotate(165deg); }
+    .floral-bg .fl-tr { top: 10%; right: -30px; width: 200px; transform: rotate(20deg); opacity: 0.05; }
+
+    /* ── Layout ── */
+    .page-wrapper {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      max-width: 540px;
+      width: 100%;
+      padding: 56px 52px;
+      box-shadow: 0 4px 40px rgba(0,0,0,0.06), 0 1px 0 var(--gold-light) inset;
+      animation: fadeUp 0.8s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Header ── */
+    .ornament {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+    .ornament-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold));
+    }
+    .ornament-line.right {
+      background: linear-gradient(to left, transparent, var(--gold));
+    }
+    .ornament-diamond {
+      width: 8px; height: 8px;
+      background: var(--gold);
+      transform: rotate(45deg);
+      flex-shrink: 0;
+    }
+
+    .eyebrow {
+      font-family: 'Jost', sans-serif;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold);
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .couple-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 42px;
+      font-weight: 300;
+      font-style: italic;
+      line-height: 1.15;
+      text-align: center;
+      color: var(--charcoal);
+      margin-bottom: 6px;
+    }
+
+    .wedding-details {
+      font-family: 'Jost', sans-serif;
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--mid-gray);
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .greeting {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 18px;
+      font-weight: 400;
+      font-style: italic;
+      text-align: center;
+      color: var(--mid-gray);
+      margin-bottom: 36px;
+      line-height: 1.6;
+    }
+    .greeting strong {
+      color: var(--charcoal);
+      font-style: normal;
+      font-weight: 600;
+    }
+
+    /* ── States ── */
+    #loading-state, #form-state, #already-responded, #success-state, #error-state {
+      display: none;
+    }
+    #loading-state.active, #form-state.active, #already-responded.active,
+    #success-state.active, #error-state.active {
+      display: block;
+    }
+
+    .spinner {
+      width: 36px; height: 36px;
+      border: 2px solid var(--cream);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+      margin: 20px auto;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Attendance choice ── */
+    .choice-label {
+      font-family: 'Jost', sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--mid-gray);
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .attend-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .attend-btn {
+      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: 2px;
+      padding: 20px 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+      font-family: 'Jost', sans-serif;
+    }
+    .attend-btn .btn-icon { font-size: 24px; margin-bottom: 8px; display: block; }
+    .attend-btn .btn-title {
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      color: var(--charcoal);
+      display: block;
+    }
+    .attend-btn .btn-sub {
+      font-size: 11px;
+      color: var(--mid-gray);
+      margin-top: 2px;
+      display: block;
+    }
+    .attend-btn:hover {
+      border-color: var(--gold-light);
+      background: var(--ivory);
+    }
+    .attend-btn.selected-yes {
+      border-color: var(--sage);
+      background: #f4f8f4;
+    }
+    .attend-btn.selected-no {
+      border-color: var(--dusty-rose);
+      background: #fdf5f3;
+    }
+
+    /* ── Form fields ── */
+    .fields-section {
+      display: none;
+      animation: fadeIn 0.4s ease both;
+    }
+    .fields-section.visible { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .field-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--mid-gray);
+      margin-bottom: 8px;
+    }
+
+    input[type="number"], select, textarea {
+      width: 100%;
+      font-family: 'Jost', sans-serif;
+      font-size: 14px;
+      color: var(--charcoal);
+      background: var(--ivory);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      padding: 12px 14px;
+      outline: none;
+      transition: border-color 0.2s;
+      -webkit-appearance: none;
+    }
+    input[type="number"]:focus, select:focus, textarea:focus {
+      border-color: var(--gold-light);
+      background: #fff;
+    }
+    textarea {
+      resize: vertical;
+      min-height: 90px;
+      line-height: 1.6;
+    }
+
+    /* ── Menu options ── */
+    .menu-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .menu-option {
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      padding: 12px 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+      background: #fff;
+    }
+    .menu-option input { display: none; }
+    .menu-option .menu-icon { font-size: 18px; display: block; margin-bottom: 4px; }
+    .menu-option .menu-name {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      color: var(--charcoal);
+    }
+    .menu-option:hover { border-color: var(--gold-light); background: var(--ivory); }
+    .menu-option.selected {
+      border-color: var(--gold);
+      background: #fdf9f4;
+    }
+
+    /* ── Submit button ── */
+    .submit-btn {
+      width: 100%;
+      margin-top: 28px;
+      padding: 16px;
+      background: var(--gold);
+      color: #fff;
+      border: none;
+      border-radius: 2px;
+      font-family: 'Jost', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.1s;
+    }
+    .submit-btn:hover { background: var(--gold-dark); }
+    .submit-btn:active { transform: scale(0.99); }
+    .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ── Success / Already responded ── */
+    .result-icon {
+      font-size: 48px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .result-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 32px;
+      font-weight: 300;
+      font-style: italic;
+      text-align: center;
+      color: var(--charcoal);
+      margin-bottom: 12px;
+    }
+    .result-text {
+      font-size: 14px;
+      color: var(--mid-gray);
+      text-align: center;
+      line-height: 1.7;
+    }
+
+    /* ── Error ── */
+    .error-icon { font-size: 40px; text-align: center; margin-bottom: 16px; }
+    .error-text {
+      font-size: 14px;
+      color: var(--mid-gray);
+      text-align: center;
+      line-height: 1.7;
+    }
+
+    .footer-ornament { margin-top: 40px; }
+
+    @media (max-width: 520px) {
+      .card { padding: 36px 24px; }
+      .couple-name { font-size: 34px; }
+      .menu-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Floral SVG background -->
+<div class="floral-bg">
+  <svg class="fl-tl" viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M150 20 C80 20 20 80 20 150 C20 220 80 280 150 280" stroke="#b8966a" stroke-width="1.5" fill="none"/>
+    <circle cx="150" cy="150" r="60" stroke="#b8966a" stroke-width="1" fill="none"/>
+    <path d="M150 90 Q180 120 150 150 Q120 120 150 90" fill="#b8966a" opacity="0.5"/>
+    <path d="M150 90 Q120 60 90 90 Q60 120 90 150" stroke="#b8966a" stroke-width="1" fill="none"/>
+    <path d="M90 150 Q60 180 90 210 Q120 240 150 210" stroke="#b8966a" stroke-width="1" fill="none"/>
+    <path d="M150 210 Q180 240 210 210 Q240 180 210 150" stroke="#b8966a" stroke-width="1" fill="none"/>
+    <path d="M210 150 Q240 120 210 90 Q180 60 150 90" stroke="#b8966a" stroke-width="1" fill="none"/>
+    <circle cx="150" cy="150" r="8" fill="#b8966a" opacity="0.6"/>
+    <path d="M30 270 Q80 240 100 200 Q120 240 170 260" stroke="#b8966a" stroke-width="1" fill="none"/>
+    <path d="M20 180 Q50 160 80 170 Q60 200 40 210" stroke="#b8966a" stroke-width="1" fill="none" opacity="0.7"/>
+  </svg>
+  <svg class="fl-br" viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M150 20 C80 20 20 80 20 150 C20 220 80 280 150 280" stroke="#b8966a" stroke-width="1.5" fill="none"/>
+    <circle cx="150" cy="150" r="60" stroke="#b8966a" stroke-width="1" fill="none"/>
+    <path d="M150 90 Q180 120 150 150 Q120 120 150 90" fill="#b8966a" opacity="0.5"/>
+    <path d="M150 90 Q120 60 90 90 Q60 120 90 150" stroke="#b8966a" stroke-width="1" fill="none"/>
+    <path d="M90 150 Q60 180 90 210 Q120 240 150 210" stroke="#b8966a" stroke-width="1" fill="none"/>
+    <path d="M150 210 Q180 240 210 210 Q240 180 210 150" stroke="#b8966a" stroke-width="1" fill="none"/>
+    <path d="M210 150 Q240 120 210 90 Q180 60 150 90" stroke="#b8966a" stroke-width="1" fill="none"/>
+    <circle cx="150" cy="150" r="8" fill="#b8966a" opacity="0.6"/>
+  </svg>
+</div>
+
+<div class="page-wrapper">
+  <div class="card">
+
+    <!-- Loading -->
+    <div id="loading-state" class="active">
+      <div class="spinner"></div>
+    </div>
+
+    <!-- Form RSVP -->
+    <div id="form-state">
+      <p class="eyebrow">Partecipazione al Matrimonio</p>
+      <h1 class="couple-name" id="couple-name-heading">— —</h1>
+      <p class="wedding-details" id="wedding-details-text"></p>
+
+      <div class="ornament">
+        <div class="ornament-line"></div>
+        <div class="ornament-diamond"></div>
+        <div class="ornament-line right"></div>
+      </div>
+
+      <p class="greeting">Caro/a <strong id="guest-name-display">Ospite</strong>,<br>
+        siamo onorati di invitarti a celebrare con noi questo giorno speciale.<br>
+        Per favore, comunicaci la tua risposta entro il prima possibile.
+      </p>
+
+      <!-- Scelta presenza -->
+      <p class="choice-label">Confermi la tua presenza?</p>
+      <div class="attend-buttons">
+        <button class="attend-btn" id="btn-yes" onclick="selectAttendance(true)">
+          <span class="btn-icon">💐</span>
+          <span class="btn-title">Con piacere!</span>
+          <span class="btn-sub">Sarò presente</span>
+        </button>
+        <button class="attend-btn" id="btn-no" onclick="selectAttendance(false)">
+          <span class="btn-icon">🥀</span>
+          <span class="btn-title">Con dispiacere</span>
+          <span class="btn-sub">Non potrò esserci</span>
+        </button>
+      </div>
+
+      <!-- Campi aggiuntivi (solo se presente) -->
+      <div class="fields-section" id="yes-fields">
+        <div class="field-group">
+          <label for="companions">Accompagnatori (oltre a te)</label>
+          <input type="number" id="companions" min="0" max="20" value="0" />
+        </div>
+
+        <div class="field-group">
+          <label>Preferenza menù</label>
+          <div class="menu-grid">
+            <label class="menu-option" onclick="selectMenu(this, 'standard')">
+              <input type="radio" name="menu" value="standard" />
+              <span class="menu-icon">🍽️</span>
+              <span class="menu-name">Standard</span>
+            </label>
+            <label class="menu-option" onclick="selectMenu(this, 'vegetarian')">
+              <input type="radio" name="menu" value="vegetarian" />
+              <span class="menu-icon">🥗</span>
+              <span class="menu-name">Vegetariano</span>
+            </label>
+            <label class="menu-option" onclick="selectMenu(this, 'vegan')">
+              <input type="radio" name="menu" value="vegan" />
+              <span class="menu-icon">🌿</span>
+              <span class="menu-name">Vegano</span>
+            </label>
+            <label class="menu-option" onclick="selectMenu(this, 'gluten_free')">
+              <input type="radio" name="menu" value="gluten_free" />
+              <span class="menu-icon">🌾</span>
+              <span class="menu-name">Senza glutine</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Messaggio (sempre visibile dopo la scelta) -->
+      <div class="fields-section" id="message-field">
+        <div class="field-group">
+          <label for="message">Un pensiero per gli sposi <span style="font-style:italic;text-transform:none;font-size:10px;">(opzionale)</span></label>
+          <textarea id="message" placeholder="Scrivi qui il tuo messaggio..."></textarea>
+        </div>
+      </div>
+
+      <button class="submit-btn" id="submit-btn" onclick="submitRSVP()" disabled>
+        Invia la mia risposta
+      </button>
+    </div>
+
+    <!-- Già risposto -->
+    <div id="already-responded">
+      <div class="result-icon">✉️</div>
+      <p class="result-title">Già risposto</p>
+      <p class="result-text">
+        Hai già inviato la tua risposta.<br>
+        Grazie ancora per aver confermato!
+      </p>
+      <div class="footer-ornament">
+        <div class="ornament">
+          <div class="ornament-line"></div>
+          <div class="ornament-diamond"></div>
+          <div class="ornament-line right"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Successo -->
+    <div id="success-state">
+      <div class="result-icon" id="success-icon">🎊</div>
+      <p class="result-title" id="success-title">Grazie!</p>
+      <p class="result-text" id="success-text"></p>
+      <div class="footer-ornament">
+        <div class="ornament">
+          <div class="ornament-line"></div>
+          <div class="ornament-diamond"></div>
+          <div class="ornament-line right"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Errore -->
+    <div id="error-state">
+      <div class="error-icon">🔗</div>
+      <p class="result-title">Link non valido</p>
+      <p class="error-text">
+        Il link che hai utilizzato non è valido o è scaduto.<br>
+        Contatta gli sposi per ricevere un nuovo invito.
+      </p>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // ── Config ──────────────────────────────────────────────────────────────
+  //const API_BASE = '/api'; // Cambia con il tuo URL se necessario
+  const API_BASE = 'http://localhost:8000/api';
+  // ── State ────────────────────────────────────────────────────────────────
+  let attending = null;
+  let selectedMenu = null;
+  let guestToken = null;
+
+  // ── Init ─────────────────────────────────────────────────────────────────
+  document.addEventListener('DOMContentLoaded', async () => {
+    const params = new URLSearchParams(window.location.search);
+    guestToken = params.get('token');
+
+    if (!guestToken) {
+      showState('error-state');
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_BASE}/rsvp/${guestToken}`);
+      if (!res.ok) { showState('error-state'); return; }
+      const data = await res.json();
+
+      document.getElementById('couple-name-heading').textContent = data.couple_name;
+      document.title = `RSVP — ${data.couple_name}`;
+
+      const parts = [];
+      if (data.wedding_date) parts.push(formatDate(data.wedding_date));
+      if (data.wedding_location) parts.push(data.wedding_location);
+      document.getElementById('wedding-details-text').textContent = parts.join('  ·  ');
+
+      document.getElementById('guest-name-display').textContent = data.name;
+
+      if (data.has_responded) {
+        showState('already-responded');
+      } else {
+        showState('form-state');
+      }
+    } catch (e) {
+      showState('error-state');
+    }
+  });
+
+  // ── UI helpers ────────────────────────────────────────────────────────────
+  function showState(id) {
+    ['loading-state', 'form-state', 'already-responded', 'success-state', 'error-state']
+      .forEach(s => document.getElementById(s).classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  function selectAttendance(value) {
+    attending = value;
+    document.getElementById('btn-yes').className = 'attend-btn' + (value ? ' selected-yes' : '');
+    document.getElementById('btn-no').className = 'attend-btn' + (!value ? ' selected-no' : '');
+
+    document.getElementById('yes-fields').classList.toggle('visible', value);
+    document.getElementById('message-field').classList.add('visible');
+    document.getElementById('submit-btn').disabled = false;
+
+    if (!value) {
+      selectedMenu = null;
+      document.querySelectorAll('.menu-option').forEach(el => el.classList.remove('selected'));
+    }
+  }
+
+  function selectMenu(el, value) {
+    selectedMenu = value;
+    document.querySelectorAll('.menu-option').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
+  function formatDate(dateStr) {
+    if (!dateStr) return '';
+    const [y, m, d] = dateStr.split('-');
+    const months = ['gennaio','febbraio','marzo','aprile','maggio','giugno',
+                    'luglio','agosto','settembre','ottobre','novembre','dicembre'];
+    return `${parseInt(d)} ${months[parseInt(m)-1]} ${y}`;
+  }
+
+  // ── Submit ────────────────────────────────────────────────────────────────
+  async function submitRSVP() {
+    if (attending === null) return;
+
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.textContent = 'Invio in corso…';
+
+    const payload = {
+      attending,
+      companions: attending ? parseInt(document.getElementById('companions').value || 0) : 0,
+      menu_choice: attending ? (selectedMenu || 'standard') : null,
+      message: document.getElementById('message').value.trim() || null,
+    };
+
+    try {
+      const res = await fetch(`${API_BASE}/rsvp/${guestToken}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        document.getElementById('success-icon').textContent = attending ? '🥂' : '🥀';
+        document.getElementById('success-title').textContent = attending ? 'Ci vediamo presto!' : 'Ci mancherai!';
+        document.getElementById('success-text').textContent = attending
+          ? `Perfetto ${data.guest_name}, la tua presenza è confermata. Non vediamo l'ora di festeggiare con te!`
+          : `Grazie per aver risposto, ${data.guest_name}. Ci dispiace che tu non possa essere con noi, ma ti siamo ugualmente grati.`;
+        showState('success-state');
+      } else {
+        if (res.status === 409) {
+          showState('already-responded');
+        } else {
+          alert('Errore durante l\'invio. Riprova più tardi.');
+          btn.disabled = false;
+          btn.textContent = 'Invia la mia risposta';
+        }
+      }
+    } catch (e) {
+      alert('Errore di rete. Controlla la connessione e riprova.');
+      btn.disabled = false;
+      btn.textContent = 'Invia la mia risposta';
+    }
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard — Wedding RSVP</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --gold: #b8966a;
+      --gold-light: #d4b896;
+      --gold-dark: #8a6c42;
+      --ivory: #faf6f0;
+      --cream: #f2ebe0;
+      --sage: #8a9e8a;
+      --dusty-rose: #c4907a;
+      --charcoal: #2c2c2c;
+      --mid-gray: #6b6560;
+      --light-gray: #e8e2da;
+      --border: rgba(184,150,106,0.2);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Jost', sans-serif;
+      background: var(--ivory);
+      color: var(--charcoal);
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .header-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px;
+      font-style: italic;
+      font-weight: 300;
+      color: var(--charcoal);
+    }
+    .header-title span { color: var(--gold); }
+    .header-actions { display: flex; gap: 10px; align-items: center; }
+
+    .btn-sm {
+      padding: 7px 16px;
+      font-family: 'Jost', sans-serif;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      border-radius: 2px;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--mid-gray);
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+    .btn-sm:hover { border-color: var(--gold-light); color: var(--gold-dark); }
+    .btn-sm.primary { background: var(--gold); color: #fff; border-color: var(--gold); }
+    .btn-sm.primary:hover { background: var(--gold-dark); }
+    .btn-sm.danger { color: #b85a5a; border-color: rgba(184,90,90,0.3); }
+    .btn-sm.danger:hover { background: #fdf5f5; }
+
+    /* ── Main layout ── */
+    main { max-width: 1100px; margin: 0 auto; padding: 32px 24px; }
+
+    /* ── Stats grid ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 14px;
+      margin-bottom: 32px;
+    }
+    .stat-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      padding: 20px 18px;
+      animation: fadeUp 0.5s ease both;
+    }
+    .stat-card:nth-child(1) { animation-delay: 0.05s; }
+    .stat-card:nth-child(2) { animation-delay: 0.1s; }
+    .stat-card:nth-child(3) { animation-delay: 0.15s; }
+    .stat-card:nth-child(4) { animation-delay: 0.2s; }
+    .stat-card:nth-child(5) { animation-delay: 0.25s; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .stat-label {
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--mid-gray);
+      margin-bottom: 8px;
+    }
+    .stat-value {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 40px;
+      font-weight: 300;
+      line-height: 1;
+      color: var(--charcoal);
+    }
+    .stat-card.gold .stat-value { color: var(--gold-dark); }
+    .stat-card.green .stat-value { color: var(--sage); }
+    .stat-card.rose .stat-value { color: var(--dusty-rose); }
+
+    /* ── Progress bar ── */
+    .progress-section {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      padding: 20px 22px;
+      margin-bottom: 28px;
+    }
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .progress-title {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--mid-gray);
+    }
+    .progress-pct {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--gold-dark);
+    }
+    .progress-bar-bg {
+      height: 6px;
+      background: var(--cream);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(to right, var(--gold-light), var(--gold));
+      border-radius: 3px;
+      transition: width 1s ease;
+    }
+
+    /* ── Table section ── */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 24px;
+      font-style: italic;
+      font-weight: 300;
+    }
+
+    /* ── Add guest form ── */
+    .add-guest-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .add-guest-row input {
+      font-family: 'Jost', sans-serif;
+      font-size: 13px;
+      color: var(--charcoal);
+      background: var(--ivory);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      padding: 9px 12px;
+      outline: none;
+      flex: 1;
+      min-width: 140px;
+      transition: border-color 0.2s;
+    }
+    .add-guest-row input:focus { border-color: var(--gold-light); background: #fff; }
+
+    /* ── Table ── */
+    .table-wrap {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      overflow-x: auto;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    thead th {
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--mid-gray);
+      padding: 14px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      background: var(--ivory);
+      white-space: nowrap;
+    }
+    tbody tr {
+      border-bottom: 1px solid rgba(184,150,106,0.1);
+      transition: background 0.15s;
+    }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: var(--ivory); }
+    td {
+      padding: 13px 16px;
+      font-size: 13px;
+      color: var(--charcoal);
+      vertical-align: middle;
+    }
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+    }
+    .badge-present { background: #eef4ee; color: #5a8a5a; }
+    .badge-absent  { background: #fdf2f0; color: #c4907a; }
+    .badge-pending { background: var(--cream); color: var(--mid-gray); }
+    .link-cell {
+      font-size: 11px;
+      color: var(--gold);
+      font-family: monospace;
+      cursor: pointer;
+    }
+    .link-cell:hover { text-decoration: underline; }
+
+    .empty-state {
+      padding: 48px;
+      text-align: center;
+      color: var(--mid-gray);
+      font-size: 14px;
+    }
+
+    /* ── Menu breakdown ── */
+    .menu-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+    .menu-chip {
+      background: var(--cream);
+      border-radius: 2px;
+      padding: 8px 14px;
+      font-size: 12px;
+      color: var(--mid-gray);
+    }
+    .menu-chip strong { color: var(--charcoal); }
+
+    .filter-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .filter-btn {
+      padding: 6px 14px;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: #fff;
+      color: var(--mid-gray);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .filter-btn.active { background: var(--gold); color: #fff; border-color: var(--gold); }
+
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--charcoal);
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 2px;
+      font-size: 13px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+      z-index: 100;
+    }
+    #toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-title">Wedding RSVP <span>·</span> Dashboard</div>
+  <div class="header-actions">
+    <a href="#" class="btn-sm" onclick="exportCSV()">⬇ Esporta CSV</a>
+    <a href="#" class="btn-sm danger" onclick="logout()">Esci</a>
+  </div>
+</header>
+
+<main>
+
+  <!-- Stats -->
+  <div class="stats-grid" id="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label">Totale invitati</div>
+      <div class="stat-value" id="stat-total">—</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-label">Presenti</div>
+      <div class="stat-value" id="stat-attending">—</div>
+    </div>
+    <div class="stat-card rose">
+      <div class="stat-label">Assenti</div>
+      <div class="stat-value" id="stat-not-attending">—</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">In attesa</div>
+      <div class="stat-value" id="stat-pending">—</div>
+    </div>
+    <div class="stat-card gold">
+      <div class="stat-label">Persone totali</div>
+      <div class="stat-value" id="stat-total-people">—</div>
+    </div>
+  </div>
+
+  <!-- Progress bar -->
+  <div class="progress-section">
+    <div class="progress-header">
+      <span class="progress-title">Risposte ricevute</span>
+      <span class="progress-pct" id="progress-pct">0%</span>
+    </div>
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" id="progress-fill" style="width: 0%"></div>
+    </div>
+    <!-- Menu breakdown -->
+    <div class="menu-row" id="menu-row"></div>
+  </div>
+
+  <!-- Guest list -->
+  <div class="section-header">
+    <h2 class="section-title">Lista Invitati</h2>
+  </div>
+
+  <!-- Add guest -->
+  <div class="add-guest-row">
+    <input type="text" id="new-name" placeholder="Nome e cognome" />
+    <input type="email" id="new-email" placeholder="Email (opzionale)" />
+    <button class="btn-sm primary" onclick="addGuest()">+ Aggiungi</button>
+  </div>
+
+  <!-- Filter -->
+  <div class="filter-row">
+    <button class="filter-btn active" onclick="setFilter('all', this)">Tutti</button>
+    <button class="filter-btn" onclick="setFilter('attending', this)">Presenti</button>
+    <button class="filter-btn" onclick="setFilter('absent', this)">Assenti</button>
+    <button class="filter-btn" onclick="setFilter('pending', this)">In attesa</button>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Risposta</th>
+          <th>Accomp.</th>
+          <th>Menu</th>
+          <th>Messaggio</th>
+          <th>Link RSVP</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="guests-tbody">
+        <tr><td colspan="7" class="empty-state">Caricamento…</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</main>
+
+<div id="toast"></div>
+
+<script>
+  //const API_BASE = '/api';
+  const API_BASE = 'http://localhost:8000/api';
+  //const RSVP_BASE = '/rsvp'; // percorso della pagina rsvp
+//  const RSVP_BASE = 'http://localhost:8000/rsvp'; // percorso della pagina rsvp
+const RSVP_BASE = 'http://localhost/wedding-rsvp/frontend/rsvp/index.html';
+  let allGuests = [];
+  let currentFilter = 'all';
+  let token = localStorage.getItem('admin_token');
+
+  if (!token) window.location.href = 'login.html';
+
+  const headers = () => ({
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`,
+  });
+
+  async function init() {
+    await Promise.all([loadStats(), loadGuests()]);
+  }
+
+  async function loadStats() {
+    const res = await authFetch(`${API_BASE}/admin/stats`);
+    if (!res) return;
+    const s = await res.json();
+
+    document.getElementById('stat-total').textContent = s.total_guests;
+    document.getElementById('stat-attending').textContent = s.attending;
+    document.getElementById('stat-not-attending').textContent = s.not_attending;
+    document.getElementById('stat-pending').textContent = s.pending;
+    document.getElementById('stat-total-people').textContent = s.attending + s.total_companions;
+
+    const pct = s.total_guests > 0 ? Math.round((s.responded / s.total_guests) * 100) : 0;
+    document.getElementById('progress-pct').textContent = pct + '%';
+    document.getElementById('progress-fill').style.width = pct + '%';
+
+    const menus = [
+      { key: 'menu_standard', label: '🍽️ Standard', val: s.menu_standard },
+      { key: 'menu_vegetarian', label: '🥗 Vegetariano', val: s.menu_vegetarian },
+      { key: 'menu_vegan', label: '🌿 Vegano', val: s.menu_vegan },
+      { key: 'menu_gluten_free', label: '🌾 Senza glutine', val: s.menu_gluten_free },
+    ];
+    document.getElementById('menu-row').innerHTML = menus
+      .filter(m => m.val > 0)
+      .map(m => `<div class="menu-chip">${m.label}: <strong>${m.val}</strong></div>`)
+      .join('');
+  }
+
+  async function loadGuests() {
+    const res = await authFetch(`${API_BASE}/admin/guests`);
+    if (!res) return;
+    allGuests = await res.json();
+    renderGuests();
+  }
+
+  function setFilter(filter, el) {
+    currentFilter = filter;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    renderGuests();
+  }
+
+  function renderGuests() {
+    const filtered = allGuests.filter(g => {
+      if (currentFilter === 'attending') return g.attending === true;
+      if (currentFilter === 'absent') return g.attending === false;
+      if (currentFilter === 'pending') return !g.has_responded;
+      return true;
+    });
+
+    const tbody = document.getElementById('guests-tbody');
+    if (filtered.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="7" class="empty-state">Nessun invitato in questa categoria.</td></tr>';
+      return;
+    }
+
+    const menuLabels = { standard: '🍽️ Standard', vegetarian: '🥗 Vegetariano', vegan: '🌿 Vegano', gluten_free: '🌾 Senza glutine' };
+
+    tbody.innerHTML = filtered.map(g => {
+      let badge = '';
+      if (!g.has_responded) badge = '<span class="badge badge-pending">In attesa</span>';
+      else if (g.attending) badge = '<span class="badge badge-present">Presente</span>';
+      else badge = '<span class="badge badge-absent">Assente</span>';
+
+     
+	  const rsvpUrl = `${RSVP_BASE}?token=${g.token}`;
+      const shortUrl = `…${g.token.slice(-10)}`;
+
+      return `<tr>
+        <td><strong>${escHtml(g.name)}</strong>${g.email ? `<br><span style="font-size:11px;color:var(--mid-gray)">${escHtml(g.email)}</span>` : ''}</td>
+        <td>${badge}</td>
+        <td>${g.attending ? (g.companions || 0) : '—'}</td>
+        <td>${g.menu_choice ? menuLabels[g.menu_choice] || g.menu_choice : '—'}</td>
+        <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${g.message ? escHtml(g.message) : ''}">${g.message ? escHtml(g.message) : '—'}</td>
+        <td><span class="link-cell" onclick="copyLink('${rsvpUrl}')" title="${rsvpUrl}">${shortUrl}</span></td>
+        <td><button class="btn-sm danger" onclick="deleteGuest(${g.id}, '${escHtml(g.name)}')">Elimina</button></td>
+      </tr>`;
+    }).join('');
+  }
+
+  async function addGuest() {
+    const name = document.getElementById('new-name').value.trim();
+    if (!name) { toast('Inserisci almeno il nome'); return; }
+    const email = document.getElementById('new-email').value.trim() || null;
+
+    const res = await authFetch(`${API_BASE}/admin/guests`, {
+      method: 'POST',
+      body: JSON.stringify({ name, email }),
+    });
+    if (!res) return;
+
+    document.getElementById('new-name').value = '';
+    document.getElementById('new-email').value = '';
+    toast(`Invitato "${name}" aggiunto!`);
+    await init();
+  }
+
+  async function deleteGuest(id, name) {
+    if (!confirm(`Eliminare "${name}"? Questa azione è irreversibile.`)) return;
+    const res = await authFetch(`${API_BASE}/admin/guests/${id}`, { method: 'DELETE' });
+    if (!res) return;
+    toast(`"${name}" eliminato.`);
+    await init();
+  }
+
+  async function exportCSV() {
+    const res = await authFetch(`${API_BASE}/admin/export/csv`);
+    if (!res) return;
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'invitati.csv'; a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function copyLink(url) {
+    navigator.clipboard.writeText(url).then(() => toast('Link copiato!'));
+  }
+
+  function logout() {
+    localStorage.removeItem('admin_token');
+    window.location.href = 'login.html';
+  }
+
+  async function authFetch(url, options = {}) {
+    const res = await fetch(url, { ...options, headers: { ...headers(), ...(options.headers || {}) } });
+    if (res.status === 401) { logout(); return null; }
+    return res;
+  }
+
+  function escHtml(str) {
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function toast(msg) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 2800);
+  }
+
+  init();
+</script>
+</body>
+</html>
