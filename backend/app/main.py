@@ -12,6 +12,7 @@ from .config import settings
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Crea tabelle se non esistono
+    Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
     yield
 
