@@ -395,11 +395,10 @@
 <div id="toast"></div>
 
 <script>
-  //const API_BASE = '/api';
-  const API_BASE = 'http://localhost:8000/api';
-  //const RSVP_BASE = '/rsvp'; // percorso della pagina rsvp
-//  const RSVP_BASE = 'http://localhost:8000/rsvp'; // percorso della pagina rsvp
-const RSVP_BASE = 'http://localhost/wedding-rsvp/frontend/rsvp/index.html';
+  const API_BASE = '/api';
+  
+  const RSVP_BASE = '/rsvp'; // percorso della pagina rsvp
+
   let allGuests = [];
   let currentFilter = 'all';
   let token = localStorage.getItem('admin_token');
