@@ -494,34 +494,21 @@
   }
 
   function updateCompanions() {
-    const n = parseInt(document.getElementById('companions').value || 0);
-    const container = document.getElementById('companions-fields');
-    const listDiv = document.getElementById('companions-list');
+	const n = parseInt(document.getElementById('companions').value || 0);
+	const container = document.getElementById('companions-fields');
+	const listDiv = document.getElementById('companions-list');
 
-    listDiv.style.display = n > 0 ? 'block' : 'none';
-    container.innerHTML = '';
+	listDiv.style.display = n > 0 ? 'block' : 'none';
+	container.innerHTML = '';
 
-    for (let i = 0; i < n; i++) {
-      const row = document.createElement('div');
-      row.className = 'companion-row';
-      row.innerHTML = `
-        <div>
-          <label>Nome ${i+1}</label>
-          <input type="text" id="comp-nome-${i}" placeholder="Nome" />
-        </div>
-        <div>
-          <label>Cognome ${i+1}</label>
-          <input type="text" id="comp-cognome-${i}" placeholder="Cognome" />
-        </div>
-        <div>
-          <label>Tipo</label>
-          <select id="comp-tipo-${i}">
-            <option value="adulto">Adulto</option>
-            <option value="bambino">Bambino</option>
-          </select>
-        </div>`;
-      container.appendChild(row);
-    }
+	for (let i = 0; i < n; i++) {
+	const row = document.createElement('div');
+	row.style.marginBottom = '10px';
+	row.innerHTML = `
+	  <label>Accompagnatore ${i+1}</label>
+	  <input type="text" id="comp-nome-${i}" placeholder="Nome e cognome" />`;
+	container.appendChild(row);
+	}
   }
 
   function selectMenu(el, value) {
@@ -548,12 +535,12 @@
     const n = attending ? parseInt(document.getElementById('companions').value || 0) : 0;
     const companions_details = [];
     for (let i = 0; i < n; i++) {
-      companions_details.push({
-        nome: document.getElementById(`comp-nome-${i}`)?.value.trim() || '',
-        cognome: document.getElementById(`comp-cognome-${i}`)?.value.trim() || '',
-        tipo: document.getElementById(`comp-tipo-${i}`)?.value || 'adulto',
-      });
-    }
+	  companions_details.push({
+		nome: document.getElementById(`comp-nome-${i}`)?.value.trim() || '',
+		cognome: '',
+		tipo: 'adulto',
+	  });
+	}
 
     const payload = {
       attending,
