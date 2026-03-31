@@ -92,6 +92,10 @@ def delete_guest(guest_id: int, db: Session = Depends(get_db), _: str = Depends(
     guest = db.query(Guest).filter(Guest.id == guest_id).first()
     if not guest:
         raise HTTPException(status_code=404, detail="Invitato non trovato")
+    # Elimina prima la risposta se esiste
+    if guest.response:
+        db.delete(guest.response)
+        db.flush()
     db.delete(guest)
     db.commit()
     return {"message": "Invitato eliminato"}
