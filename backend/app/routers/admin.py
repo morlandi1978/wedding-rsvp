@@ -28,9 +28,9 @@ class GuestOut(BaseModel):
     has_responded: bool
     attending: Optional[bool]
     companions: Optional[int]
-    companions_details: Optional[str]
+    companions_details: Optional[str] = None
     menu_choice: Optional[str]
-    allergies: Optional[str]
+    allergies: Optional[str] = None
     message: Optional[str]
     submitted_at: Optional[str]
 
