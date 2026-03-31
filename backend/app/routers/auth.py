@@ -43,3 +43,13 @@ def setup_admin(db: Session = Depends(get_db)):
     db.add(admin)
     db.commit()
     return {"message": f"Admin '{settings.ADMIN_USERNAME}' creato con successo"}
+    
+    
+@router.delete("/reset-admin", include_in_schema=False)
+def reset_admin(db: Session = Depends(get_db)):
+    """Endpoint temporaneo per resettare l'admin. Da rimuovere dopo l'uso!"""
+    db.query(AdminUser).all()
+    for admin in db.query(AdminUser).all():
+        db.delete(admin)
+    db.commit()
+    return {"message": "Admin resettato"}
