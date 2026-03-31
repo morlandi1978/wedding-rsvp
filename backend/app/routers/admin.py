@@ -28,7 +28,9 @@ class GuestOut(BaseModel):
     has_responded: bool
     attending: Optional[bool]
     companions: Optional[int]
+    companions_details: Optional[str]
     menu_choice: Optional[str]
+    allergies: Optional[str]
     message: Optional[str]
     submitted_at: Optional[str]
 
@@ -68,6 +70,8 @@ def list_guests(db: Session = Depends(get_db), _: str = Depends(get_current_admi
             menu_choice=r.menu_choice if r else None,
             message=r.message if r else None,
             submitted_at=str(r.submitted_at) if r else None,
+            allergies=r.allergies if r else None,
+            companions_details=r.companions_details if r else None,
         ))
     return result
 

@@ -37,6 +37,9 @@ class RSVPResponse(Base):
     submitted_at = Column(DateTime(timezone=True), server_default=func.now())
 
     guest = relationship("Guest", back_populates="response")
+    
+    allergies = Column(Text, nullable=True)
+    companions_details = Column(Text, nullable=True)  # JSON con nome/cognome/tipo
 
 
 class AdminUser(Base):

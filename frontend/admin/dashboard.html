@@ -375,13 +375,15 @@
     <table>
       <thead>
         <tr>
-          <th>Nome</th>
-          <th>Risposta</th>
-          <th>Accomp.</th>
-          <th>Menu</th>
-          <th>Messaggio</th>
-          <th>Link RSVP</th>
-          <th></th>
+			<th>Nome</th>
+			<th>Risposta</th>
+			<th>Accomp.</th>
+			<th>Dettagli accomp.</th>
+			<th>Menu</th>
+			<th>Allergie</th>
+			<th>Messaggio</th>
+			<th>Link RSVP</th>
+			<th></th>
         </tr>
       </thead>
       <tbody id="guests-tbody">
@@ -482,14 +484,20 @@
       const shortUrl = `…${g.token.slice(-10)}`;
 
       return `<tr>
-        <td><strong>${escHtml(g.name)}</strong>${g.email ? `<br><span style="font-size:11px;color:var(--mid-gray)">${escHtml(g.email)}</span>` : ''}</td>
-        <td>${badge}</td>
-        <td>${g.attending ? (g.companions || 0) : '—'}</td>
-        <td>${g.menu_choice ? menuLabels[g.menu_choice] || g.menu_choice : '—'}</td>
-        <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${g.message ? escHtml(g.message) : ''}">${g.message ? escHtml(g.message) : '—'}</td>
-        <td><span class="link-cell" onclick="copyLink('${rsvpUrl}')" title="${rsvpUrl}">${shortUrl}</span></td>
-        <td><button class="btn-sm danger" onclick="deleteGuest(${g.id}, '${escHtml(g.name)}')">Elimina</button></td>
-      </tr>`;
+	  <td><strong>${escHtml(g.name)}</strong>${g.email ? `<br><span style="font-size:11px;color:var(--mid-gray)">${escHtml(g.email)}</span>` : ''}</td>
+	  <td>${badge}</td>
+	  <td>${g.attending ? (g.companions || 0) : '—'}</td>
+	  <td style="font-size:12px;max-width:160px">
+		${g.companions_details ? JSON.parse(g.companions_details).map(c => 
+		  `${c.nome} ${c.cognome} <span class="badge ${c.tipo === 'bambino' ? 'badge-absent' : 'badge-pending'}">${c.tipo}</span>`
+		).join('<br>') : '—'}
+	  </td>
+	  <td>${g.menu_choice ? menuLabels[g.menu_choice] || g.menu_choice : '—'}</td>
+	  <td style="max-width:140px;font-size:12px">${g.allergies ? escHtml(g.allergies) : '—'}</td>
+	  <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${g.message ? escHtml(g.message) : ''}">${g.message ? escHtml(g.message) : '—'}</td>
+	  <td><span class="link-cell" onclick="copyLink('${rsvpUrl}')" title="${rsvpUrl}">${shortUrl}</span></td>
+	  <td><button class="btn-sm danger" onclick="deleteGuest(${g.id}, '${escHtml(g.name)}')">Elimina</button></td>
+	</tr>`;
     }).join('');
   }
 
