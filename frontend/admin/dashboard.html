@@ -489,7 +489,7 @@
 	  <td>${g.attending ? (g.companions || 0) : '—'}</td>
 	  <td style="font-size:12px;max-width:160px">
 		${g.companions_details ? JSON.parse(g.companions_details).map(c => 
-		  `${c.nome} ${c.cognome} <span class="badge ${c.tipo === 'bambino' ? 'badge-absent' : 'badge-pending'}">${c.tipo}</span>`
+		  `${c.nome}`
 		).join('<br>') : '—'}
 	  </td>
 	  <td>${g.menu_choice ? menuLabels[g.menu_choice] || g.menu_choice : '—'}</td>
