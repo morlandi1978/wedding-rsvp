@@ -148,7 +148,7 @@
 		const text = await res.text();
 		const data = text ? JSON.parse(text) : {};
         localStorage.setItem('admin_token', data.access_token);
-        window.location.href = 'dashboard.html';
+		window.location.href = '/admin/dashboard.html';
       } else {
         errEl.style.display = 'block';
         btn.disabled = false;
