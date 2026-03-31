@@ -145,7 +145,8 @@
       }).catch(() => null);
 
       if (res && res.ok) {
-        const data = await res.json();
+		const text = await res.text();
+		const data = text ? JSON.parse(text) : {};
         localStorage.setItem('admin_token', data.access_token);
         window.location.href = 'dashboard.html';
       } else {
