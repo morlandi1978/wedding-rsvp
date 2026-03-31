@@ -129,33 +129,42 @@
     });
 
     async function doLogin() {
-      const btn = document.getElementById('login-btn');
-      const errEl = document.getElementById('error-msg');
-      errEl.style.display = 'none';
-      btn.disabled = true;
-      btn.textContent = 'Accesso…';
+	  const btn = document.getElementById('login-btn');
+	  const errEl = document.getElementById('error-msg');
+	  errEl.style.display = 'none';
+	  btn.disabled = true;
+	  btn.textContent = 'Accesso…';
 
-      const res = await fetch(`${API_BASE}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          username: document.getElementById('username').value,
-          password: document.getElementById('password').value,
-        }),
-      }).catch(() => null);
+	  try {
+		const res = await fetch(`${API_BASE}/auth/login`, {
+		  method: 'POST',
+		  headers: { 'Content-Type': 'application/json' },
+		  body: JSON.stringify({
+			username: document.getElementById('username').value,
+			password: document.getElementById('password').value,
+		  }),
+		});
 
-      if (res && res.ok) {
 		const text = await res.text();
-		const data = text ? JSON.parse(text) : {};
-		console.log('data risposta login:', data);
-        localStorage.setItem('admin_token', data.access_token);
-		window.location.href = '/admin/dashboard.html';
-      } else {
-        errEl.style.display = 'block';
-        btn.disabled = false;
-        btn.textContent = 'Accedi';
-      }
-    }
+		console.log('Risposta raw:', text);
+		
+		if (res.ok && text) {
+		  const data = JSON.parse(text);
+		  console.log('Token ricevuto:', data.access_token);
+		  localStorage.setItem('admin_token', data.access_token);
+		  window.location.href = 'dashboard.html';
+		} else {
+		  errEl.style.display = 'block';
+		  btn.disabled = false;
+		  btn.textContent = 'Accedi';
+		}
+	  } catch(e) {
+		console.error('Errore:', e);
+		errEl.style.display = 'block';
+		btn.disabled = false;
+		btn.textContent = 'Accedi';
+	  }
+	}
   </script>
 </body>
 </html>
