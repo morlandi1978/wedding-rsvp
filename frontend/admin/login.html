@@ -147,6 +147,7 @@
       if (res && res.ok) {
 		const text = await res.text();
 		const data = text ? JSON.parse(text) : {};
+		console.log('data risposta login:', data);
         localStorage.setItem('admin_token', data.access_token);
 		window.location.href = '/admin/dashboard.html';
       } else {
